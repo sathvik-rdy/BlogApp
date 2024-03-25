@@ -13,41 +13,54 @@ def post_list(request):
         return render(request, "blog/post_list.html", {"posts": posts})
 
     except Exception as e:
-        print(
-            f"Hmmm, I was not successful in finding the posts! Maybe a connectivity issue: {e}"
-        )
+        print(f"Something went wrong: {e}")
         raise
 
 
 def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, "blog/post_detail.html", {"post": post})
+    try:
+        post = get_object_or_404(Post, pk=pk)
+        return render(request, "blog/post_detail.html", {"post": post})
+
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        raise
 
 
 def post_new(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            return redirect("post_detail", pk=post.pk)
-    else:
-        form = PostForm()
-    return render(request, "blog/post_edit.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = request.user
+                post.published_date = timezone.now()
+                post.save()
+                return redirect("post_detail", pk=post.pk)
+        else:
+            form = PostForm()
+        return render(request, "blog/post_edit.html", {"form": form})
+
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        raise
 
 
 def post_edit(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            return redirect("post_detail", pk=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request, "blog/post_edit.html", {"form": form})
+    try:
+        post = get_object_or_404(Post, pk=pk)
+        if request.method == "POST":
+            form = PostForm(request.POST, instance=post)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = request.user
+                post.published_date = timezone.now()
+                post.save()
+                return redirect("post_detail", pk=post.pk)
+        else:
+            form = PostForm(instance=post)
+        return render(request, "blog/post_edit.html", {"form": form})
+
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        raise
